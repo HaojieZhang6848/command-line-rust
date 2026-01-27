@@ -1,23 +1,24 @@
-use assert_cmd::Command;
-use pretty_assertions::assert_eq;
+use assert_cmd::cargo;
 
 #[test]
 fn runs() {
-    let mut cmd = Command::cargo_bin("hello").unwrap();
-    let output = cmd.output().expect("fail");
+    let mut cmd = cargo::cargo_bin_cmd!("hello");
+    let output = cmd.output().expect("failed to execute command");
     assert!(output.status.success());
     let stdout = String::from_utf8(output.stdout).expect("invalid UTF-8");
-    assert_eq!(stdout, "Hello, world!\n");
+    assert!(
+        stdout.contains("Hello") && stdout.contains("Shanghai") && stdout.contains("Nashville")
+    );
 }
 
 #[test]
 fn true_ok() {
-    let mut cmd = Command::cargo_bin("true").unwrap();
+    let mut cmd = cargo::cargo_bin_cmd!("true");
     cmd.assert().success();
 }
 
 #[test]
 fn false_not_ok() {
-    let mut cmd = Command::cargo_bin("false").unwrap();
+    let mut cmd = cargo::cargo_bin_cmd!("false");
     cmd.assert().failure();
 }
